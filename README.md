@@ -19,3 +19,4 @@ A sleek, dark-themed interactive control interface designed for managing Handy d
 Copyright (c) 2026 [Saesei]. All rights reserved.
 
 This software and its original source code are proprietary. You may view the source code for reference, but you **may not** copy, modify, redistribute, host, or use this project for commercial or non-commercial purposes without explicit written permission from the copyright owner.
+
