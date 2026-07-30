@@ -4,7 +4,7 @@
 	<link rel="icon" type="image/x-icon" href="app_icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handy Numpad Controller Pro</title>
+    <title>Handy Controller</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
@@ -423,59 +423,61 @@
             <button id="posModeBtn" onclick="togglePosMode()" style="width:100%;">▶ START POS MODE</button>
         </div>
 
-        <!-- RIGHT PANEL: INTERACTIVE KEYMAP -->
+<!-- RIGHT PANEL: INTERACTIVE KEYMAP -->
         <div class="panel">
             <div class="panel-title" style="margin-bottom:12px;">Layout Reference</div>
             
-            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="color:var(--cyan-glow); font-weight:800; font-size:10px;">CONTROL MODE <span id="bindStatus">(Touch to Use)</span></div>
-                    <button onclick="resetDefaultKeymaps()" class="preset-btn">Reset Binds</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="color:var(--cyan-glow); font-weight:800; font-size:12px; line-height: 1.4; letter-spacing: 0.5px;">
+                    CONTROL MODE <br>
+                    <span id="bindStatus" style="font-weight:700; font-size:10px; color:var(--cyan-glow);">(Press to Use)</span>
                 </div>
-                <!-- MOBILE REBIND TOGGLE -->
-                <button id="editBindsBtn" onclick="toggleEditBinds()" class="preset-btn" style="width:100%; border-style: dashed;">✏️ Enable Rebinding</button>
+                <div style="display: flex; gap: 6px;">
+                    <button id="editBindsBtn" onclick="toggleEditBinds()" class="preset-btn" style="border-style: dashed;">✏️ Rebind</button>
+                    <button onclick="resetDefaultKeymaps()" class="preset-btn">Reset</button>
+                </div>
             </div>
             
-            <!-- Updated onclicks to use handleNumpadClick -->
+            <!-- Numpad Grid with enhanced contrast labels -->
             <div class="numpad-grid">
                 <div class="numpad-btn" id="btn_max" onclick="handleNumpadClick('max')">
-                    <span class="key-code" id="code_max">[Numpad7]</span><span class="key-desc">MAX</span>
+                    <span class="key-code" id="code_max">[Numpad7]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">MAX</span>
                 </div>
                 <div class="numpad-btn" id="btn_upper" onclick="handleNumpadClick('upper')">
-                    <span class="key-code" id="code_upper">[Numpad8]</span><span class="key-desc">Upper Zone</span>
+                    <span class="key-code" id="code_upper">[Numpad8]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">Upper Zone</span>
                 </div>
                 <div class="numpad-btn" id="btn_fast" onclick="handleNumpadClick('fast')">
-                    <span class="key-code" id="code_fast">[Numpad9]</span><span class="key-desc">FAST</span>
+                    <span class="key-code" id="code_fast">[Numpad9]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">FAST</span>
                 </div>
 
                 <div class="numpad-btn" id="btn_full" onclick="handleNumpadClick('full')">
-                    <span class="key-code" id="code_full">[Numpad4]</span><span class="key-desc">Full Zone</span>
+                    <span class="key-code" id="code_full">[Numpad4]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">Full Zone</span>
                 </div>
                 <div class="numpad-btn" id="btn_middle" onclick="handleNumpadClick('middle')">
-                    <span class="key-code" id="code_middle">[Numpad5]</span><span class="key-desc">Middle Zone</span>
+                    <span class="key-code" id="code_middle">[Numpad5]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">Middle Zone</span>
                 </div>
                 <div class="numpad-btn" id="btn_med" onclick="handleNumpadClick('med')">
-                    <span class="key-code" id="code_med">[Numpad6]</span><span class="key-desc">MED</span>
+                    <span class="key-code" id="code_med">[Numpad6]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">MED</span>
                 </div>
 
                 <div class="numpad-btn" id="btn_start" onclick="handleNumpadClick('start')">
-                    <span class="key-code" id="code_start">[Numpad1]</span><span class="key-desc">START</span>
+                    <span class="key-code" id="code_start">[Numpad1]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">START</span>
                 </div>
                 <div class="numpad-btn" id="btn_bottom" onclick="handleNumpadClick('bottom')">
-                    <span class="key-code" id="code_bottom">[Numpad2]</span><span class="key-desc">Bottom Zone</span>
+                    <span class="key-code" id="code_bottom">[Numpad2]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">Bottom Zone</span>
                 </div>
                 <div class="numpad-btn" id="btn_slow" onclick="handleNumpadClick('slow')">
-                    <span class="key-code" id="code_slow">[Numpad3]</span><span class="key-desc">SLOW</span>
+                    <span class="key-code" id="code_slow">[Numpad3]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">SLOW</span>
                 </div>
 
                 <div class="numpad-btn" id="btn_stop" onclick="handleNumpadClick('stop')">
-                    <span class="key-code" id="code_stop">[Numpad0]</span><span class="key-desc">STOP</span>
+                    <span class="key-code" id="code_stop">[Numpad0]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">STOP</span>
                 </div>
                 <div class="numpad-btn" id="btn_speedUp" onclick="handleNumpadClick('speedUp')">
-                    <span class="key-code" id="code_speedUp">[NumpadAdd]</span><span class="key-desc">Speed +5</span>
+                    <span class="key-code" id="code_speedUp">[NumpadAdd]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">Speed +5</span>
                 </div>
                 <div class="numpad-btn" id="btn_speedDown" onclick="handleNumpadClick('speedDown')">
-                    <span class="key-code" id="code_speedDown">[NumpadSub]</span><span class="key-desc">Speed -5</span>
+                    <span class="key-code" id="code_speedDown">[NumpadSub]</span><span class="key-desc" style="color:var(--text-main); font-weight:600;">Speed -5</span>
                 </div>
             </div>
             
@@ -591,16 +593,17 @@
             const status = document.getElementById("bindStatus");
             
             if (editBindsMode) {
-                btn.innerText = "✅ Done Rebinding";
+                btn.innerText = "✅ Done";
                 btn.classList.add("active-toggle");
                 status.innerText = "(Click to Rebind)";
                 status.style.color = "var(--red-glow)";
                 logMessage("✏️ Rebind Mode ENABLED. Click a button below, then press a key.");
             } else {
-                btn.innerText = "✏️ Enable Rebinding";
+                btn.innerText = "✏️ Rebind";
                 btn.classList.remove("active-toggle");
-                status.innerText = "(Touch to Use)";
-                status.style.color = "var(--cyan-glow)";
+                status.innerText = "(Press to Use)";
+                status.style.color = "var(--text-muted)";
+				status.style.color = "var(--cyan-glow)"; // Updated to cyan glow
                 listeningAction = null;
                 document.querySelectorAll('.numpad-btn').forEach(b => b.classList.remove('listening'));
                 logMessage("✏️ Rebind Mode DISABLED. Buttons will now execute commands.");
