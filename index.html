@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/Saesei/handy-controller-web/main/app_icon.ico">
+	<link rel="icon" type="image/x-icon" href="app_icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handy Controller</title>
+    <title>Handy Numpad Controller Pro</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
@@ -136,6 +136,12 @@
             box-shadow: none;
         }
         button.preset-btn:hover { background: var(--panel-hover); border-color: var(--cyan-glow); }
+        
+        button.active-toggle {
+            background: rgba(255, 0, 85, 0.15);
+            color: var(--red-glow);
+            border-color: var(--red-glow);
+        }
 
         /* 3-PANEL GRID */
         .main-grid {
@@ -287,6 +293,39 @@
         }
 
         hr { border: none; height: 1px; background: var(--panel-border); margin: 10px 0; }
+        
+        /* 📱 MOBILE RESPONSIVENESS MEDIA QUERIES 📱 */
+        @media (max-width: 850px) {
+            body {
+                height: auto;
+                overflow-y: auto;
+                padding: 10px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .connect-box {
+                flex-wrap: wrap;
+                justify-content: space-between;
+                width: 100%;
+            }
+            .connect-box input {
+                flex-grow: 1;
+            }
+            .main-grid {
+                grid-template-columns: 1fr;
+                overflow: visible;
+            }
+            .panel {
+                overflow: visible;
+            }
+            .log-container {
+                height: 250px;
+                flex-shrink: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -388,49 +427,54 @@
         <div class="panel">
             <div class="panel-title" style="margin-bottom:12px;">Layout Reference</div>
             
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <div style="color:var(--cyan-glow); font-weight:800; font-size:10px;">CONTROL MODE (Click to Rebind)</div>
-                <button onclick="resetDefaultKeymaps()" class="preset-btn">Reset Binds</button>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="color:var(--cyan-glow); font-weight:800; font-size:10px;">CONTROL MODE <span id="bindStatus">(Touch to Use)</span></div>
+                    <button onclick="resetDefaultKeymaps()" class="preset-btn">Reset Binds</button>
+                </div>
+                <!-- MOBILE REBIND TOGGLE -->
+                <button id="editBindsBtn" onclick="toggleEditBinds()" class="preset-btn" style="width:100%; border-style: dashed;">✏️ Enable Rebinding</button>
             </div>
             
+            <!-- Updated onclicks to use handleNumpadClick -->
             <div class="numpad-grid">
-                <div class="numpad-btn" id="btn_max" onclick="startListening('max')">
+                <div class="numpad-btn" id="btn_max" onclick="handleNumpadClick('max')">
                     <span class="key-code" id="code_max">[Numpad7]</span><span class="key-desc">MAX</span>
                 </div>
-                <div class="numpad-btn" id="btn_upper" onclick="startListening('upper')">
+                <div class="numpad-btn" id="btn_upper" onclick="handleNumpadClick('upper')">
                     <span class="key-code" id="code_upper">[Numpad8]</span><span class="key-desc">Upper Zone</span>
                 </div>
-                <div class="numpad-btn" id="btn_fast" onclick="startListening('fast')">
+                <div class="numpad-btn" id="btn_fast" onclick="handleNumpadClick('fast')">
                     <span class="key-code" id="code_fast">[Numpad9]</span><span class="key-desc">FAST</span>
                 </div>
 
-                <div class="numpad-btn" id="btn_full" onclick="startListening('full')">
+                <div class="numpad-btn" id="btn_full" onclick="handleNumpadClick('full')">
                     <span class="key-code" id="code_full">[Numpad4]</span><span class="key-desc">Full Zone</span>
                 </div>
-                <div class="numpad-btn" id="btn_middle" onclick="startListening('middle')">
+                <div class="numpad-btn" id="btn_middle" onclick="handleNumpadClick('middle')">
                     <span class="key-code" id="code_middle">[Numpad5]</span><span class="key-desc">Middle Zone</span>
                 </div>
-                <div class="numpad-btn" id="btn_med" onclick="startListening('med')">
+                <div class="numpad-btn" id="btn_med" onclick="handleNumpadClick('med')">
                     <span class="key-code" id="code_med">[Numpad6]</span><span class="key-desc">MED</span>
                 </div>
 
-                <div class="numpad-btn" id="btn_start" onclick="startListening('start')">
+                <div class="numpad-btn" id="btn_start" onclick="handleNumpadClick('start')">
                     <span class="key-code" id="code_start">[Numpad1]</span><span class="key-desc">START</span>
                 </div>
-                <div class="numpad-btn" id="btn_bottom" onclick="startListening('bottom')">
+                <div class="numpad-btn" id="btn_bottom" onclick="handleNumpadClick('bottom')">
                     <span class="key-code" id="code_bottom">[Numpad2]</span><span class="key-desc">Bottom Zone</span>
                 </div>
-                <div class="numpad-btn" id="btn_slow" onclick="startListening('slow')">
+                <div class="numpad-btn" id="btn_slow" onclick="handleNumpadClick('slow')">
                     <span class="key-code" id="code_slow">[Numpad3]</span><span class="key-desc">SLOW</span>
                 </div>
 
-                <div class="numpad-btn" id="btn_stop" onclick="startListening('stop')">
+                <div class="numpad-btn" id="btn_stop" onclick="handleNumpadClick('stop')">
                     <span class="key-code" id="code_stop">[Numpad0]</span><span class="key-desc">STOP</span>
                 </div>
-                <div class="numpad-btn" id="btn_speedUp" onclick="startListening('speedUp')">
+                <div class="numpad-btn" id="btn_speedUp" onclick="handleNumpadClick('speedUp')">
                     <span class="key-code" id="code_speedUp">[NumpadAdd]</span><span class="key-desc">Speed +5</span>
                 </div>
-                <div class="numpad-btn" id="btn_speedDown" onclick="startListening('speedDown')">
+                <div class="numpad-btn" id="btn_speedDown" onclick="handleNumpadClick('speedDown')">
                     <span class="key-code" id="code_speedDown">[NumpadSub]</span><span class="key-desc">Speed -5</span>
                 </div>
             </div>
@@ -465,6 +509,7 @@
         let lastSpeedSend = 0;
         let lastStrokeSend = 0;
         let listeningAction = null;
+        let editBindsMode = false; // New state for mobile rebinding
         
         const DEFAULT_CONFIG = {
             speeds: { slow: 20, med: 50, fast: 80, max: 100 },
@@ -539,6 +584,74 @@
             }
         }
 
+        /* --- MOBILE TOUCH / REBIND LOGIC --- */
+        function toggleEditBinds() {
+            editBindsMode = !editBindsMode;
+            const btn = document.getElementById("editBindsBtn");
+            const status = document.getElementById("bindStatus");
+            
+            if (editBindsMode) {
+                btn.innerText = "✅ Done Rebinding";
+                btn.classList.add("active-toggle");
+                status.innerText = "(Click to Rebind)";
+                status.style.color = "var(--red-glow)";
+                logMessage("✏️ Rebind Mode ENABLED. Click a button below, then press a key.");
+            } else {
+                btn.innerText = "✏️ Enable Rebinding";
+                btn.classList.remove("active-toggle");
+                status.innerText = "(Touch to Use)";
+                status.style.color = "var(--cyan-glow)";
+                listeningAction = null;
+                document.querySelectorAll('.numpad-btn').forEach(b => b.classList.remove('listening'));
+                logMessage("✏️ Rebind Mode DISABLED. Buttons will now execute commands.");
+            }
+        }
+
+        function handleNumpadClick(action) {
+            if (editBindsMode) {
+                // Trigger the traditional rebind listener
+                startListening(action);
+            } else {
+                // Execute the action natively as a touch button
+                if (!isConnected) {
+                    logMessage("⚠️ Please connect to the Handy first!");
+                    return;
+                }
+                
+                // If in pattern mode, resolve the key mapped to this action and apply pattern
+                if (state.pattern_mode) {
+                    let keyCode = keymap[action];
+                    const pMap = {"Numpad1":1, "Numpad2":2, "Numpad3":3, "Numpad4":4, "Numpad5":5, "Numpad6":6, "Numpad7":7, "Numpad8":8, "Numpad9":9};
+                    if (pMap[keyCode]) applyPattern(pMap[keyCode]);
+                    if (keyCode === "Numpad0" || action === "stop") stopDevice();
+                } else {
+                    // Standard Control Mode Execution
+                    switch(action) {
+                        case 'start': startManual(); break;
+                        case 'stop': stopDevice(); break;
+                        case 'slow': onSpeedChange(config.speeds.slow, "SLOW"); break;
+                        case 'med': onSpeedChange(config.speeds.med, "MEDIUM"); break;
+                        case 'fast': onSpeedChange(config.speeds.fast, "FAST"); break;
+                        case 'max': onSpeedChange(config.speeds.max, "MAX"); break;
+                        case 'full': setCustomZone("full", "FULL"); break;
+                        case 'middle': setCustomZone("middle", "MIDDLE"); break;
+                        case 'bottom': setCustomZone("bottom", "BOTTOM"); break;
+                        case 'upper': setCustomZone("upper", "UPPER"); break;
+                        case 'speedUp': 
+                            let upVal = Math.min(100, state.speed + 5);
+                            onSpeedChange(upVal);
+                            logMessage(`🚀 Speed increased to ${upVal}%`); 
+                            break;
+                        case 'speedDown': 
+                            let downVal = Math.max(0, state.speed - 5);
+                            onSpeedChange(downVal);
+                            logMessage(`🐌 Speed decreased to ${downVal}%`); 
+                            break;
+                    }
+                }
+            }
+        }
+
         function startListening(action) {
             listeningAction = action;
             document.querySelectorAll('.numpad-btn').forEach(b => b.classList.remove('listening'));
@@ -572,12 +685,12 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-		function toggleMask() {
-			const input = document.getElementById('connectionKey');
-			const isHidden = input.type === 'password';
-			input.type = isHidden ? 'text' : 'password';
-			event.target.innerText = isHidden ? '👁️' : '🔒';
-		}
+        function toggleMask() {
+            const input = document.getElementById('connectionKey');
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            event.target.innerText = isHidden ? '👁️' : '🔒';
+        }
 
         async function apiReq(path, method="GET", body = null) {
             const key = document.getElementById('connectionKey').value.trim();
@@ -625,26 +738,25 @@
             logMessage("💾 Settings updated & saved to browser!");
         }
 
-		function onSpeedChange(val, label = "") {
-			val = parseInt(val);
-			document.getElementById('speedSlider').value = val;
-			document.getElementById('posSpeed').value = val;
-			document.getElementById('speedValLabel').innerText = val + "%";
-			document.getElementById('posSpeedLabel').innerText = val + "%";
-			state.speed = val;
-			
-			// Log explicit preset names or general speed changes if provided
-			if (label) {
-				logMessage(`⚡ Speed set to ${label} (${val}%)`);
-			}
+        function onSpeedChange(val, label = "") {
+            val = parseInt(val);
+            document.getElementById('speedSlider').value = val;
+            document.getElementById('posSpeed').value = val;
+            document.getElementById('speedValLabel').innerText = val + "%";
+            document.getElementById('posSpeedLabel').innerText = val + "%";
+            state.speed = val;
+            
+            if (label) {
+                logMessage(`⚡ Speed set to ${label} (${val}%)`);
+            }
 
-			const now = Date.now();
-			if (now - lastSpeedSend > 120 && state.running && !state.active_pattern) {
-				lastSpeedSend = now;
-				apiReq("/hamp/velocity", "PUT", { velocity: val });
-			}
-		}
-		
+            const now = Date.now();
+            if (now - lastSpeedSend > 120 && state.running && !state.active_pattern) {
+                lastSpeedSend = now;
+                apiReq("/hamp/velocity", "PUT", { velocity: val });
+            }
+        }
+        
         function onMinRangeChange(val) {
             val = parseInt(val);
             if (val > state.zone[1]) val = state.zone[1];
@@ -816,6 +928,7 @@
             } catch (e) { logMessage("❌ Failed to upload/play pattern script."); }
         }
 
+        // Keep standard keyboard shortcuts active for Desktop users
         window.addEventListener('keydown', (e) => {
             if (e.target.tagName === "INPUT" && e.target.type !== "range") return;
             if (listeningAction) {
@@ -826,6 +939,9 @@
                 document.querySelectorAll('.numpad-btn').forEach(b => b.classList.remove('listening'));
                 logMessage(`⌨️ Rebound [${listeningAction.toUpperCase()}] to key: ${e.code}`);
                 listeningAction = null;
+                
+                // Optional: Auto turn off rebind mode after a successful keybind
+                if (editBindsMode) toggleEditBinds(); 
                 return;
             }
 
@@ -840,28 +956,28 @@
                 if (map[e.code]) applyPattern(map[e.code]);
                 if (e.code === "Numpad0") stopDevice();
             } else {
-				switch(e.code) {
-					case keymap.start: startManual(); break;
-					case keymap.stop: stopDevice(); break;
-					case keymap.slow: onSpeedChange(config.speeds.slow, "SLOW"); break;
-					case keymap.med: onSpeedChange(config.speeds.med, "MEDIUM"); break;
-					case keymap.fast: onSpeedChange(config.speeds.fast, "FAST"); break;
-					case keymap.max: onSpeedChange(config.speeds.max, "MAX"); break;
-					case keymap.full: setCustomZone("full", "FULL"); break;
-					case keymap.middle: setCustomZone("middle", "MIDDLE"); break;
-					case keymap.bottom: setCustomZone("bottom", "BOTTOM"); break;
-					case keymap.upper: setCustomZone("upper", "UPPER"); break;
-					case keymap.speedUp: 
-						let upVal = Math.min(100, state.speed + 5);
-						onSpeedChange(upVal);
-						logMessage(`🚀 Speed increased to ${upVal}%`); 
-						break;
-					case keymap.speedDown: 
-						let downVal = Math.max(0, state.speed - 5);
-						onSpeedChange(downVal);
-						logMessage(`🐌 Speed decreased to ${downVal}%`); 
-						break;
-				}
+                switch(e.code) {
+                    case keymap.start: startManual(); break;
+                    case keymap.stop: stopDevice(); break;
+                    case keymap.slow: onSpeedChange(config.speeds.slow, "SLOW"); break;
+                    case keymap.med: onSpeedChange(config.speeds.med, "MEDIUM"); break;
+                    case keymap.fast: onSpeedChange(config.speeds.fast, "FAST"); break;
+                    case keymap.max: onSpeedChange(config.speeds.max, "MAX"); break;
+                    case keymap.full: setCustomZone("full", "FULL"); break;
+                    case keymap.middle: setCustomZone("middle", "MIDDLE"); break;
+                    case keymap.bottom: setCustomZone("bottom", "BOTTOM"); break;
+                    case keymap.upper: setCustomZone("upper", "UPPER"); break;
+                    case keymap.speedUp: 
+                        let upVal = Math.min(100, state.speed + 5);
+                        onSpeedChange(upVal);
+                        logMessage(`🚀 Speed increased to ${upVal}%`); 
+                        break;
+                    case keymap.speedDown: 
+                        let downVal = Math.max(0, state.speed - 5);
+                        onSpeedChange(downVal);
+                        logMessage(`🐌 Speed decreased to ${downVal}%`); 
+                        break;
+                }
             }
         });
     </script>
