@@ -427,10 +427,10 @@
                     <span class="key-code" id="code_stop">[Numpad0]</span><span class="key-desc">STOP</span>
                 </div>
                 <div class="numpad-btn" id="btn_speedUp" onclick="startListening('speedUp')">
-                    <span class="key-code" id="code_speedUp">[NumpadAdd]</span><span class="key-desc">Speed +10</span>
+                    <span class="key-code" id="code_speedUp">[NumpadAdd]</span><span class="key-desc">Speed +5</span>
                 </div>
                 <div class="numpad-btn" id="btn_speedDown" onclick="startListening('speedDown')">
-                    <span class="key-code" id="code_speedDown">[NumpadSub]</span><span class="key-desc">Speed -10</span>
+                    <span class="key-code" id="code_speedDown">[NumpadSub]</span><span class="key-desc">Speed -5</span>
                 </div>
             </div>
             
@@ -624,21 +624,26 @@
             logMessage("💾 Settings updated & saved to browser!");
         }
 
-        function onSpeedChange(val) {
-            val = parseInt(val);
-            document.getElementById('speedSlider').value = val;
-            document.getElementById('posSpeed').value = val;
-            document.getElementById('speedValLabel').innerText = val + "%";
-            document.getElementById('posSpeedLabel').innerText = val + "%";
-            state.speed = val;
-            
-            const now = Date.now();
-            if (now - lastSpeedSend > 120 && state.running && !state.active_pattern) {
-                lastSpeedSend = now;
-                apiReq("/hamp/velocity", "PUT", { velocity: val });
-            }
-        }
+		function onSpeedChange(val, label = "") {
+			val = parseInt(val);
+			document.getElementById('speedSlider').value = val;
+			document.getElementById('posSpeed').value = val;
+			document.getElementById('speedValLabel').innerText = val + "%";
+			document.getElementById('posSpeedLabel').innerText = val + "%";
+			state.speed = val;
+			
+			// Log explicit preset names or general speed changes if provided
+			if (label) {
+				logMessage(`⚡ Speed set to ${label} (${val}%)`);
+			}
 
+			const now = Date.now();
+			if (now - lastSpeedSend > 120 && state.running && !state.active_pattern) {
+				lastSpeedSend = now;
+				apiReq("/hamp/velocity", "PUT", { velocity: val });
+			}
+		}
+		
         function onMinRangeChange(val) {
             val = parseInt(val);
             if (val > state.zone[1]) val = state.zone[1];
@@ -834,20 +839,28 @@
                 if (map[e.code]) applyPattern(map[e.code]);
                 if (e.code === "Numpad0") stopDevice();
             } else {
-                switch(e.code) {
-                    case keymap.start: startManual(); break;
-                    case keymap.stop: stopDevice(); break;
-                    case keymap.slow: onSpeedChange(config.speeds.slow); break;
-                    case keymap.med: onSpeedChange(config.speeds.med); break;
-                    case keymap.fast: onSpeedChange(config.speeds.fast); break;
-                    case keymap.max: onSpeedChange(config.speeds.max); break;
-                    case keymap.full: setCustomZone("full", "FULL"); break;
-                    case keymap.middle: setCustomZone("middle", "MIDDLE"); break;
-                    case keymap.bottom: setCustomZone("bottom", "BOTTOM"); break;
-                    case keymap.upper: setCustomZone("upper", "UPPER"); break;
-                    case keymap.speedUp: onSpeedChange(Math.min(100, state.speed + 10)); break;
-                    case keymap.speedDown: onSpeedChange(Math.max(0, state.speed - 10)); break;
-                }
+				switch(e.code) {
+					case keymap.start: startManual(); break;
+					case keymap.stop: stopDevice(); break;
+					case keymap.slow: onSpeedChange(config.speeds.slow, "SLOW"); break;
+					case keymap.med: onSpeedChange(config.speeds.med, "MEDIUM"); break;
+					case keymap.fast: onSpeedChange(config.speeds.fast, "FAST"); break;
+					case keymap.max: onSpeedChange(config.speeds.max, "MAX"); break;
+					case keymap.full: setCustomZone("full", "FULL"); break;
+					case keymap.middle: setCustomZone("middle", "MIDDLE"); break;
+					case keymap.bottom: setCustomZone("bottom", "BOTTOM"); break;
+					case keymap.upper: setCustomZone("upper", "UPPER"); break;
+					case keymap.speedUp: 
+						let upVal = Math.min(100, state.speed + 5);
+						onSpeedChange(upVal);
+						logMessage(`🚀 Speed increased to ${upVal}%`); 
+						break;
+					case keymap.speedDown: 
+						let downVal = Math.max(0, state.speed - 5);
+						onSpeedChange(downVal);
+						logMessage(`🐌 Speed decreased to ${downVal}%`); 
+						break;
+				}
             }
         });
     </script>
