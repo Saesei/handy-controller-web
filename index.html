@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handy Numpad Controller</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Consolas, monospace;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .title { font-size: 20px; font-weight: bold; }
+        .mode-text { font-size: 14px; font-weight: bold; margin-top: 5px; }
+        .mode-control { color: #00E5FF; }
+        .mode-pattern { color: #00E676; }
+        
+        .connect-box { display: flex; align-items: center; gap: 8px; }
+        input[type="password"], input[type="text"], input[type="number"] {
+            background-color: #1E1E1E; color: #FFB300; border: none; padding: 6px; font-family: Consolas; outline: none;
+        }
+        input[type="number"] { width: 50px; text-align: center; }
+        
+        button {
+            background-color: #00E676; color: #000000; border: none; padding: 6px 12px; font-family: Consolas; font-weight: bold; cursor: pointer;
+        }
+        button:hover { opacity: 0.8; }
+        button.stop-btn { background-color: #FF5252; color: #FFFFFF; }
+        button.info-btn { background-color: #00E5FF; }
+        button.preset-btn { background-color: #333333; color: #00E5FF; padding: 4px 8px; font-size: 11px; }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .panel {
+            background-color: #1E1E1E; padding: 15px; display: flex; flex-direction: column; overflow-y: auto; border: 1px solid #333;
+        }
+        .panel-title { color: #00E5FF; font-weight: bold; margin-bottom: 15px; font-size: 14px; text-transform: uppercase; }
+        
+        .config-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; }
+        .config-section { margin-bottom: 20px; }
+        
+        /* Sliders */
+        .slider-group { text-align: center; margin-bottom: 15px; }
+        .val-label { color: #00E5FF; font-weight: bold; margin-top: 4px; margin-bottom: 4px;}
+        input[type="range"] { width: 90%; background: #050505; height: 6px; border-radius: 3px; outline: none; margin-top:5px; }
+        
+        /* Position Mode */
+        .pos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; margin-bottom: 10px;}
+        
+        /* Log */
+        .log-container {
+            height: 120px; background-color: #050505; border: 1px solid #333; margin-top: 15px; display: flex; flex-direction: column;
+        }
+        .log-box { flex-grow: 1; overflow-y: auto; padding: 8px; color: #00FF66; font-size: 12px; white-space: pre-wrap; }
+        
+        .keymap { font-size: 12px; color: #DCDCDC; line-height: 1.5; white-space: pre; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <div class="title">HANDY NUMPAD CONTROLLER</div>
+            <div id="modeLabel" class="mode-text mode-control">CURRENT MODE: CONTROL MODE</div>
+        </div>
+        <div class="connect-box">
+            <span style="font-size: 10px; color: #888;">CONNECTION KEY</span>
+            <input type="password" id="connectionKey" placeholder="Enter Key..." style="width: 130px;" oninput="saveSavedSettings()">
+            <button onclick="toggleMask()" style="background:#1E1E1E; color:white;">🔒</button>
+            <button id="connectBtn" onclick="toggleConnection()">▶ Connect</button>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <!-- LEFT: Config Panel -->
+        <div class="panel">
+            <div class="panel-title">Speed & Range Config</div>
+            
+            <div class="config-section">
+                <div style="color:#00E5FF; font-size:12px; font-weight:bold; margin-bottom:10px;">SPEED PRESETS (%)</div>
+                <div class="config-row"><span>Slow [3]:</span><input type="number" id="spd_slow" value="20" onchange="updateConfig()"></div>
+                <div class="config-row"><span>Med [6]:</span><input type="number" id="spd_med" value="50" onchange="updateConfig()"></div>
+                <div class="config-row"><span>Fast [9]:</span><input type="number" id="spd_fast" value="80" onchange="updateConfig()"></div>
+                <div class="config-row"><span>Max [7]:</span><input type="number" id="spd_max" value="100" onchange="updateConfig()"></div>
+            </div>
+            
+            <hr style="border-color:#333; width:100%;">
+            
+            <div class="config-section" style="margin-top:10px;">
+                <div style="color:#00E5FF; font-size:12px; font-weight:bold; margin-bottom:10px;">ZONE RANGES (Min - Max)</div>
+                <div class="config-row"><span>Full [4]:</span><div><input type="number" id="z_full_min" value="20" onchange="updateConfig()"> - <input type="number" id="z_full_max" value="80" onchange="updateConfig()"></div></div>
+                <div class="config-row"><span>Bottom [2]:</span><div><input type="number" id="z_bot_min" value="20" onchange="updateConfig()"> - <input type="number" id="z_bot_max" value="40" onchange="updateConfig()"></div></div>
+                <div class="config-row"><span>Middle [5]:</span><div><input type="number" id="z_mid_min" value="30" onchange="updateConfig()"> - <input type="number" id="z_mid_max" value="50" onchange="updateConfig()"></div></div>
+                <div class="config-row"><span>Upper [8]:</span><div><input type="number" id="z_up_min" value="60" onchange="updateConfig()"> - <input type="number" id="z_up_max" value="80" onchange="updateConfig()"></div></div>
+            </div>
+        </div>
+
+        <!-- CENTER: Manual Controls -->
+        <div class="panel">
+            <div class="panel-title">Manual Controls</div>
+            
+            <div class="slider-group">
+                <div style="font-size:12px; font-weight:bold;">SPEED</div>
+                <div class="val-label" id="speedValLabel">0%</div>
+                <input type="range" id="speedSlider" min="0" max="100" value="0" oninput="onSpeedChange(this.value)">
+            </div>
+
+            <hr style="border-color:#333; width:100%;">
+
+            <div class="slider-group" style="margin-top:10px;">
+                <div style="font-size:12px; font-weight:bold;">STROKE ZONE PRESETS</div>
+                <div style="display:flex; justify-content:center; gap:5px; margin: 8px 0;">
+                    <button class="preset-btn" onclick="setCustomZone('full', 'FULL')">[4] FULL</button>
+                    <button class="preset-btn" onclick="setCustomZone('bottom', 'BOTTOM')">[2] BOT</button>
+                    <button class="preset-btn" onclick="setCustomZone('middle', 'MIDDLE')">[5] MID</button>
+                    <button class="preset-btn" onclick="setCustomZone('upper', 'UPPER')">[8] TOP</button>
+                </div>
+
+                <div class="val-label" id="rangeValLabel">20% - 80%</div>
+                <div style="font-size:11px; color:#aaa;">MIN ZONE (%)</div>
+                <input type="range" id="rangeMin" min="0" max="100" value="20" oninput="onMinRangeChange(this.value)">
+                
+                <div style="font-size:11px; color:#aaa; margin-top:5px;">MAX ZONE (%)</div>
+                <input type="range" id="rangeMax" min="0" max="100" value="80" oninput="onMaxRangeChange(this.value)">
+            </div>
+
+            <hr style="border-color:#333; width:100%; margin: 10px 0;">
+
+            <div style="text-align:center; color:#FFB300; font-size:12px; font-weight:bold; margin-bottom:5px;">POSITION MODE</div>
+            <div class="pos-grid">
+                <div>
+                    <div style="font-size:10px; color:#FFB300;">CENTER</div>
+                    <div id="posCenterLabel" style="font-size:12px; font-weight:bold; color:#FFB300;">50%</div>
+                    <input type="range" id="posCenter" min="0" max="100" value="50" oninput="onPosCenterChange(this.value)">
+                </div>
+                <div>
+                    <div style="font-size:10px; color:#00E5FF;">SPEED</div>
+                    <div id="posSpeedLabel" style="font-size:12px; font-weight:bold; color:#00E5FF;">0%</div>
+                    <input type="range" id="posSpeed" min="0" max="100" value="0" oninput="onSpeedChange(this.value)">
+                </div>
+            </div>
+            <div style="text-align:center; font-size:12px; margin-bottom:8px;">
+                WINDOW ± <input type="number" id="posWindow" value="2" onchange="updatePosWindow()"> %
+            </div>
+            <button id="posModeBtn" onclick="togglePosMode()" style="width:100%;">▶ START POS MODE</button>
+        </div>
+
+        <!-- RIGHT: Keymap -->
+        <div class="panel">
+            <div class="panel-title">Layout Reference</div>
+            
+            <div style="color:#00E5FF; font-weight:bold; font-size:12px; margin-bottom:5px;">CONTROL MODE</div>
+            <div class="keymap" id="ctrlMap">
+  [7] MAX        [8] Upper Zone   [9] FAST
+  [4] Full Zone  [5] Middle Zone  [6] MED
+  [1] START      [2] Bottom Zone  [3] SLOW
+  [0] STOP       [+] Speed +10    [-] Speed -10
+            </div>
+            
+            <hr style="border-color:#333; width:100%; margin: 15px 0;">
+            
+            <div style="color:#00E676; font-weight:bold; font-size:12px; margin-bottom:5px;">PATTERN MODE (Num Lock / *)</div>
+            <div class="keymap">
+  [1] Smooth Fast Wave     [2] Ramp Up 
+  [3] Fast Burst & Pause   [4] Fast Thrust
+  [5] Fast Pound Bounce    [6] Deep Sweeps
+  [7] Cooldown Wave        [8] Gentle Slow
+  [9] Max Speed Sprint     [0] Stop Pattern
+            </div>
+            
+            <button class="info-btn" onclick="toggleMode()" style="width:100%; margin-top:auto;">🔄 TOGGLE MODE</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM: Log -->
+    <div class="log-container">
+        <div style="padding: 4px 10px; font-size: 10px; font-weight: bold; color: #888; border-bottom: 1px solid #333;">LIVE SYSTEM LOG</div>
+        <div class="log-box" id="logBox">System initialized. Click ▶ Connect to start.</div>
+    </div>
+
+    <script>
+        const BASE_URL = "https://www.handyfeeling.com/api/handy/v2";
+        const UPLOAD_URL = "https://www.handyfeeling.com/api/hosting/v2/upload";
+        
+        let isConnected = false;
+        let lastSpeedSend = 0;
+        let lastStrokeSend = 0;
+        
+        let config = {
+            speeds: { slow: 20, med: 50, fast: 80, max: 100 },
+            zones: { full: [20, 80], bottom: [20, 40], middle: [30, 50], upper: [60, 80] }
+        };
+
+        let state = { 
+            speed: 0, running: false, zone: [20, 80], zone_name: "FULL",
+            pattern_mode: false, active_pattern: null,
+            position_mode: false, pos_center: 50, pos_window: 2
+        };
+
+        const PATTERNS = {
+            1: "Smooth Fast Wave", 2: "Ramp Up Acceleration", 3: "Fast Burst & Pause",
+            4: "Fast Thrust Bounce", 5: "Fast Pound Bounce", 6: "Deep Smooth Sweeps",
+            7: "Cooldown Wave", 8: "Gentle Slow Wave", 9: "Max Speed Sprint"
+        };
+
+        // AUTO-LOAD SAVED SETTINGS FROM BROWSER STORAGE
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem("handy_key");
+            if (savedKey) document.getElementById('connectionKey').value = savedKey;
+            
+            const savedConfig = localStorage.getItem("handy_config");
+            if (savedConfig) {
+                config = JSON.parse(savedConfig);
+                document.getElementById('spd_slow').value = config.speeds.slow;
+                document.getElementById('spd_med').value = config.speeds.med;
+                document.getElementById('spd_fast').value = config.speeds.fast;
+                document.getElementById('spd_max').value = config.speeds.max;
+                
+                document.getElementById('z_full_min').value = config.zones.full[0];
+                document.getElementById('z_full_max').value = config.zones.full[1];
+                document.getElementById('z_bot_min').value = config.zones.bottom[0];
+                document.getElementById('z_bot_max').value = config.zones.bottom[1];
+                document.getElementById('z_mid_min').value = config.zones.middle[0];
+                document.getElementById('z_mid_max').value = config.zones.middle[1];
+                document.getElementById('z_up_min').value = config.zones.upper[0];
+                document.getElementById('z_up_max').value = config.zones.upper[1];
+            }
+        });
+
+        function saveSavedSettings() {
+            localStorage.setItem("handy_key", document.getElementById('connectionKey').value.trim());
+            localStorage.setItem("handy_config", JSON.stringify(config));
+        }
+
+        function logMessage(msg) {
+            const logBox = document.getElementById('logBox');
+            const time = new Date().toLocaleTimeString('en-US', {hour12: false});
+            logBox.innerText += `\n[${time}] ${msg}`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function toggleMask() {
+            const input = document.getElementById('connectionKey');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        async function apiReq(path, method="GET", body = null) {
+            const key = document.getElementById('connectionKey').value.trim();
+            if (!key) return null;
+            let options = { method, headers: { 'X-Connection-Key': key, 'Content-Type': 'application/json' }};
+            if (body) options.body = JSON.stringify(body);
+            try {
+                const res = await fetch(`${BASE_URL}${path}`, options);
+                return await res.json();
+            } catch (e) { return null; }
+        }
+
+        async function toggleConnection() {
+            const btn = document.getElementById('connectBtn');
+            if (isConnected) {
+                stopDevice();
+                isConnected = false;
+                btn.innerText = "▶ Connect"; btn.className = "";
+                logMessage("🔌 Disconnected.");
+                return;
+            }
+            logMessage("🔌 Connecting...");
+            const data = await apiReq("/connected");
+            if (data && data.connected) {
+                logMessage("✅ Connected to Handy!");
+                isConnected = true;
+                btn.innerText = "■ Disconnect"; btn.className = "stop-btn";
+            } else {
+                logMessage("❌ Connection failed. Check your key.");
+            }
+        }
+
+        function updateConfig() {
+            config.speeds.slow = parseInt(document.getElementById('spd_slow').value);
+            config.speeds.med = parseInt(document.getElementById('spd_med').value);
+            config.speeds.fast = parseInt(document.getElementById('spd_fast').value);
+            config.speeds.max = parseInt(document.getElementById('spd_max').value);
+            
+            config.zones.full = [parseInt(document.getElementById('z_full_min').value), parseInt(document.getElementById('z_full_max').value)];
+            config.zones.bottom = [parseInt(document.getElementById('z_bot_min').value), parseInt(document.getElementById('z_bot_max').value)];
+            config.zones.middle = [parseInt(document.getElementById('z_mid_min').value), parseInt(document.getElementById('z_mid_max').value)];
+            config.zones.upper = [parseInt(document.getElementById('z_up_min').value), parseInt(document.getElementById('z_up_max').value)];
+            
+            saveSavedSettings();
+            logMessage("💾 Settings updated & saved to browser!");
+        }
+
+        function onSpeedChange(val) {
+            val = parseInt(val);
+            document.getElementById('speedSlider').value = val;
+            document.getElementById('posSpeed').value = val;
+            document.getElementById('speedValLabel').innerText = val + "%";
+            document.getElementById('posSpeedLabel').innerText = val + "%";
+            state.speed = val;
+            
+            const now = Date.now();
+            if (now - lastSpeedSend > 120 && state.running && !state.active_pattern) {
+                lastSpeedSend = now;
+                apiReq("/hamp/velocity", "PUT", { velocity: val });
+            }
+        }
+
+        function onMinRangeChange(val) {
+            val = parseInt(val);
+            if (val > state.zone[1]) val = state.zone[1];
+            updateZoneUI(val, state.zone[1]);
+            sendZoneUpdate();
+        }
+
+        function onMaxRangeChange(val) {
+            val = parseInt(val);
+            if (val < state.zone[0]) val = state.zone[0];
+            updateZoneUI(state.zone[0], val);
+            sendZoneUpdate();
+        }
+
+        function sendZoneUpdate() {
+            const now = Date.now();
+            if (now - lastStrokeSend > 150) {
+                lastStrokeSend = now;
+                apiReq("/slide", "PUT", { min: state.zone[0], max: state.zone[1] });
+            }
+        }
+
+        function updateZoneUI(minVal, maxVal) {
+            document.getElementById('rangeMin').value = minVal;
+            document.getElementById('rangeMax').value = maxVal;
+            document.getElementById('rangeValLabel').innerText = `${minVal}% - ${maxVal}%`;
+            state.zone = [minVal, maxVal];
+        }
+
+        async function setCustomZone(zoneKey, name) {
+            const z = config.zones[zoneKey];
+            state.zone_name = name;
+            updateZoneUI(z[0], z[1]);
+            await apiReq("/slide", "PUT", { min: z[0], max: z[1] });
+            logMessage(`Zone set to → ${z[0]}%–${z[1]}% (${name})`);
+        }
+
+        async function startManual() {
+            if (!isConnected) return;
+            if (state.active_pattern) { await apiReq("/hssp/stop", "PUT"); state.active_pattern = null; }
+            await setCustomZone("full", "FULL");
+            onSpeedChange(0);
+            await apiReq("/mode", "PUT", { mode: 2 });
+            await apiReq("/hamp/start", "PUT");
+            await apiReq("/hamp/velocity", "PUT", { velocity: 0 });
+            state.running = true;
+            state.position_mode = false;
+            document.getElementById("posModeBtn").innerText = "▶ START POS MODE";
+            document.getElementById("posModeBtn").className = "";
+            logMessage("▶ STARTED Manual Mode");
+        }
+
+        async function stopDevice() {
+            if (!isConnected) return;
+            if (state.active_pattern) await apiReq("/hssp/stop", "PUT");
+            await apiReq("/hamp/stop", "PUT");
+            state.running = false;
+            state.active_pattern = null;
+            state.position_mode = false;
+            document.getElementById("posModeBtn").innerText = "▶ START POS MODE";
+            document.getElementById("posModeBtn").className = "";
+            logMessage("■ STOPPED");
+        }
+
+        // POSITION MODE LOGIC
+        function onPosCenterChange(val) {
+            val = parseInt(val);
+            document.getElementById('posCenterLabel').innerText = val + "%";
+            state.pos_center = val;
+            updatePositionWindow();
+        }
+        function updatePosWindow() {
+            state.pos_window = parseInt(document.getElementById('posWindow').value) || 2;
+            updatePositionWindow();
+        }
+        function updatePositionWindow() {
+            if (state.position_mode && state.running) {
+                let half = Math.floor(state.pos_window / 2);
+                let mn = Math.max(0, state.pos_center - half);
+                let mx = Math.min(100, state.pos_center + half);
+                updateZoneUI(mn, mx);
+                sendZoneUpdate();
+            }
+        }
+        async function togglePosMode() {
+            const btn = document.getElementById('posModeBtn');
+            if (state.position_mode) {
+                await stopDevice();
+            } else {
+                if (state.active_pattern) { await apiReq("/hssp/stop", "PUT"); state.active_pattern = null; }
+                state.position_mode = true;
+                btn.innerText = "■ STOP POS MODE"; btn.className = "stop-btn";
+                await apiReq("/mode", "PUT", { mode: 2 });
+                updatePositionWindow();
+                await apiReq("/hamp/start", "PUT");
+                await apiReq("/hamp/velocity", "PUT", { velocity: state.speed });
+                state.running = true;
+                logMessage(`📍 POSITION MODE ON | Center: ${state.pos_center}%`);
+            }
+        }
+
+        // PATTERN MODE LOGIC
+        function toggleMode() {
+            state.pattern_mode = !state.pattern_mode;
+            const lbl = document.getElementById('modeLabel');
+            if (state.pattern_mode) {
+                lbl.innerText = "CURRENT MODE: PATTERN MODE";
+                lbl.className = "mode-text mode-pattern";
+            } else {
+                lbl.innerText = "CURRENT MODE: CONTROL MODE";
+                lbl.className = "mode-text mode-control";
+            }
+            logMessage(`🔄 MODE SWITCHED → ${state.pattern_mode ? 'PATTERN' : 'CONTROL'}`);
+        }
+
+        function generateFunscript(id, min_pos, max_pos) {
+            let actions = [];
+            let t = 0;
+            const total_duration_ms = 40000;
+            let stroke = 400;
+
+            if (id === 1) {
+                while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += 400; actions.push({at: t, pos: max_pos}); t += 400; }
+            } else if (id === 2) {
+                stroke = 1200; while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += stroke; actions.push({at: t, pos: max_pos}); t += stroke; stroke = Math.max(250, stroke * 0.92); }
+            } else if (id === 3) {
+                while(t < total_duration_ms) { for(let i=0;i<3;i++){ actions.push({at: t, pos: min_pos}); t += 250; actions.push({at: t, pos: max_pos}); t += 250;} actions.push({at: t, pos: min_pos}); t += 1000; }
+            } else if (id === 4) {
+                while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += 700; actions.push({at: t, pos: max_pos}); t += 150; }
+            } else if (id === 5) {
+                while(t < total_duration_ms) { actions.push({at: t, pos: max_pos}); t += 700; actions.push({at: t, pos: min_pos}); t += 150; }
+            } else if (id === 6) {
+                while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += 600; actions.push({at: t, pos: max_pos}); t += 600; }
+            } else if (id === 7) {
+                stroke = 250; while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += stroke; actions.push({at: t, pos: max_pos}); t += stroke; stroke = Math.min(1500, stroke * 1.08); }
+            } else if (id === 8) {
+                while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += 1000; actions.push({at: t, pos: max_pos}); t += 1000; }
+            } else if (id === 9) {
+                while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += 160; actions.push({at: t, pos: max_pos}); t += 160; }
+            }
+            return JSON.stringify({version: "1.0", inverted: false, range: 100, actions: actions});
+        }
+
+        async function applyPattern(num) {
+            if (!PATTERNS[num]) return;
+            const name = PATTERNS[num];
+            logMessage(`⚙️ Preparing [${name}] in background...`);
+            
+            const scriptStr = generateFunscript(num, state.zone[0], state.zone[1]);
+            let formData = new FormData();
+            formData.append("file", new Blob([scriptStr], { type: "application/json" }), "script.funscript");
+            
+            try {
+                const upRes = await fetch(UPLOAD_URL, { method: "POST", body: formData });
+                const upData = await upRes.json();
+                const url = upData.url || (upData.result && upData.result.url);
+                if (!url) throw "No URL returned";
+                
+                await apiReq("/mode", "PUT", { mode: 1 });
+                await apiReq("/hssp/setup", "PUT", { url: url });
+                await apiReq("/hssp/loop", "PUT", { loop: true });
+                
+                const serverTimeRes = await apiReq("/servertime");
+                const serverTime = serverTimeRes ? serverTimeRes.serverTime : Date.now();
+                
+                const playRes = await apiReq("/hssp/play", "PUT", { startTime: 0, estimatedServerTime: serverTime });
+                if (playRes && playRes.result === 0) {
+                    state.running = true;
+                    state.active_pattern = name;
+                    logMessage(`🌊 PLAYING PATTERN → [${name}]`);
+                }
+            } catch (e) { logMessage("❌ Failed to upload/play pattern script."); }
+        }
+
+        // KEYBOARD HOOKS
+        window.addEventListener('keydown', (e) => {
+            if(["ArrowUp","ArrowDown"," "].indexOf(e.code) > -1) { if(e.target.tagName !== "INPUT") e.preventDefault(); }
+            
+            if (e.code === "NumpadMultiply" || e.code === "NumLock") { toggleMode(); return; }
+            
+            if (!isConnected) return;
+
+            if (state.pattern_mode) {
+                const map = {"Numpad1":1, "Numpad2":2, "Numpad3":3, "Numpad4":4, "Numpad5":5, "Numpad6":6, "Numpad7":7, "Numpad8":8, "Numpad9":9};
+                if (map[e.code]) applyPattern(map[e.code]);
+                if (e.code === "Numpad0") stopDevice();
+            } else {
+                switch(e.code) {
+                    case "Numpad1": startManual(); break;
+                    case "Numpad2": setCustomZone("bottom", "BOTTOM"); break;
+                    case "Numpad3": onSpeedChange(config.speeds.slow); break;
+                    case "Numpad4": setCustomZone("full", "FULL"); break;
+                    case "Numpad5": setCustomZone("middle", "MIDDLE"); break;
+                    case "Numpad6": onSpeedChange(config.speeds.med); break;
+                    case "Numpad7": onSpeedChange(config.speeds.max); break;
+                    case "Numpad8": setCustomZone("upper", "UPPER"); break;
+                    case "Numpad9": onSpeedChange(config.speeds.fast); break;
+                    case "Numpad0": stopDevice(); break;
+                    case "NumpadAdd": onSpeedChange(Math.min(100, state.speed + 10)); break;
+                    case "NumpadSubtract": onSpeedChange(Math.max(0, state.speed - 10)); break;
+                    case "NumpadEnter": logMessage(`[STATUS] Mode: Control | Speed: ${state.speed}% | Zone: ${state.zone[0]}-${state.zone[1]}%`); break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
