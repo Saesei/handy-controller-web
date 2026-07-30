@@ -3,135 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handy Numpad Controller</title>
+    <title>Handy Numpad Controller Pro</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+        :root {
+            --bg-main: #090a0f;
+            --panel-bg: rgba(18, 22, 31, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --panel-hover: rgba(0, 240, 255, 0.12);
+            --cyan-glow: #00f0ff;
+            --green-glow: #00ff88;
+            --amber-glow: #ffb700;
+            --red-glow: #ff0055;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            background-color: #121212;
-            color: #FFFFFF;
-            font-family: Consolas, monospace;
-            margin: 0;
-            padding: 15px;
+            background: radial-gradient(circle at 50% 0%, #1a2236 0%, var(--bg-main) 70%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            box-sizing: border-box;
+            overflow: hidden;
         }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .title { font-size: 20px; font-weight: bold; }
-        .mode-text { font-size: 14px; font-weight: bold; margin-top: 5px; }
-        .mode-control { color: #00E5FF; }
-        .mode-pattern { color: #00E676; }
-        
-        .connect-box { display: flex; align-items: center; gap: 8px; }
-        input[type="password"], input[type="text"], input[type="number"] {
-            background-color: #1E1E1E; color: #FFB300; border: none; padding: 6px; font-family: Consolas; outline: none;
-        }
-        input[type="number"] { width: 50px; text-align: center; }
-        
-        button {
-            background-color: #00E676; color: #000000; border: none; padding: 6px 12px; font-family: Consolas; font-weight: bold; cursor: pointer;
-        }
-        button:hover { opacity: 0.8; }
-        button.stop-btn { background-color: #FF5252; color: #FFFFFF; }
-        button.info-btn { background-color: #00E5FF; }
-        button.preset-btn { background-color: #333333; color: #00E5FF; padding: 4px 8px; font-size: 11px; }
 
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 10px 18px;
+            border-radius: 12px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .title {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #ffffff, var(--cyan-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .mode-text {
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mode-text::before {
+            content: '';
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+        .mode-control { color: var(--cyan-glow); }
+        .mode-control::before { background: var(--cyan-glow); box-shadow: 0 0 8px var(--cyan-glow); }
+        .mode-pattern { color: var(--green-glow); }
+        .mode-pattern::before { background: var(--green-glow); box-shadow: 0 0 8px var(--green-glow); }
+
+        .connect-box { display: flex; align-items: center; gap: 8px; }
+        
+        /* INPUTS */
+        input[type="password"], input[type="text"], input[type="number"] {
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--amber-glow);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        input[type="password"], input[type="text"] { padding: 6px 10px; }
+        input[type="number"] { width: 80px; text-align: left; padding: 6px 2px 6px 6px; }
+        input[type="password"]:focus, input[type="text"]:focus, input[type="number"]:focus {
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+        }
+
+        /* BUTTONS */
+        button {
+            background: linear-gradient(135deg, var(--green-glow), #00b359);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
+        }
+        button:hover { transform: translateY(-1px); filter: brightness(1.2); box-shadow: 0 4px 16px rgba(0, 255, 136, 0.4); }
+        button:active { transform: translateY(0); }
+        
+        button.stop-btn {
+            background: linear-gradient(135deg, var(--red-glow), #b3003b);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(255, 0, 85, 0.3);
+        }
+        button.stop-btn:hover { box-shadow: 0 4px 16px rgba(255, 0, 85, 0.5); }
+
+        button.info-btn {
+            background: linear-gradient(135deg, var(--cyan-glow), #0088cc);
+            color: #000;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+        }
+
+        button.preset-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--cyan-glow);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            padding: 5px 8px;
+            font-size: 10px;
+            border-radius: 5px;
+            box-shadow: none;
+        }
+        button.preset-btn:hover { background: var(--panel-hover); border-color: var(--cyan-glow); }
+
+        /* 3-PANEL GRID */
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: 1fr 1.1fr 1fr;
+            gap: 14px;
             flex-grow: 1;
             overflow: hidden;
         }
         .panel {
-            background-color: #1E1E1E; padding: 15px; display: flex; flex-direction: column; overflow-y: auto; border: 1px solid #333;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
-        .panel-title { color: #00E5FF; font-weight: bold; margin-bottom: 15px; font-size: 14px; text-transform: uppercase; }
-        
-        .config-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; }
-        .config-section { margin-bottom: 20px; }
-        
-        /* Sliders */
-        .slider-group { text-align: center; margin-bottom: 15px; }
-        .val-label { color: #00E5FF; font-weight: bold; margin-top: 4px; margin-bottom: 4px;}
-        input[type="range"] { width: 90%; background: #050505; height: 6px; border-radius: 3px; outline: none; margin-top:5px; }
-        
-        /* Position Mode */
-        .pos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; margin-bottom: 10px;}
-        
-        /* Log */
-        .log-container {
-            height: 120px; background-color: #050505; border: 1px solid #333; margin-top: 15px; display: flex; flex-direction: column;
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
         }
-        .log-box { flex-grow: 1; overflow-y: auto; padding: 8px; color: #00FF66; font-size: 12px; white-space: pre-wrap; }
+        .panel-title {
+            color: var(--cyan-glow);
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .config-row > div {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .config-row input[type="number"] {
+            width: 46px;
+            flex-shrink: 0;
+        }
+        .config-section { margin-bottom: 14px; }
+
+        /* SLIDERS */
+        .slider-group { text-align: center; margin-bottom: 12px; }
+        .val-label { font-size: 13px; color: var(--cyan-glow); font-weight: 800; margin: 4px 0; font-family: 'JetBrains Mono', monospace; }
         
-        .keymap { font-size: 12px; color: #DCDCDC; line-height: 1.5; white-space: pre; }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin-top: 6px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--cyan-glow);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--cyan-glow);
+            transition: transform 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.25); }
+
+        .pos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; margin-bottom: 10px; }
 
         /* NUMPAD INTERACTIVE GRID */
         .numpad-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 6px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .numpad-btn {
-            background-color: #262626;
-            border: 1px solid #444;
-            color: #DCDCDC;
-            padding: 8px 4px;
-            font-family: Consolas, monospace;
-            font-size: 11px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px 4px;
+            border-radius: 6px;
             text-align: center;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 3px;
+            transition: all 0.2s ease;
         }
-        .numpad-btn:hover { background-color: #333333; border-color: #00E5FF; }
-        .numpad-btn .key-code { font-size: 11px; font-weight: bold; color: #00E5FF; }
-        .numpad-btn .key-desc { font-size: 9px; color: #AAA; margin-top: 2px; }
+        .numpad-btn:hover {
+            background: var(--panel-hover);
+            border-color: var(--cyan-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 240, 255, 0.15);
+        }
+        .numpad-btn .key-code { font-size: 10px; font-weight: 800; color: var(--cyan-glow); font-family: 'JetBrains Mono', monospace; }
+        .numpad-btn .key-desc { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
+        
         .numpad-btn.listening {
-            border-color: #FF5252;
-            background-color: #3d1414;
+            border-color: var(--red-glow);
+            background: rgba(255, 0, 85, 0.15);
             animation: pulse 1s infinite;
         }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .keymap {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            white-space: pre;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.03);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* SYSTEM LOG */
+        .log-container {
+            height: 300px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .log-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 8px 12px;
+            color: var(--green-glow);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        hr { border: none; height: 1px; background: var(--panel-border); margin: 10px 0; }
     </style>
 </head>
 <body>
 
+    <!-- TOP HEADER -->
     <div class="header">
         <div>
-            <div class="title">HANDY NUMPAD CONTROLLER</div>
+            <div class="title">HANDY CONTROLLER</div>
             <div id="modeLabel" class="mode-text mode-control">CURRENT MODE: CONTROL MODE</div>
         </div>
         <div class="connect-box">
-            <span style="font-size: 10px; color: #888;">CONNECTION KEY</span>
-            <input type="password" id="connectionKey" placeholder="Enter Key..." style="width: 130px;" oninput="saveSavedSettings()">
-            <button onclick="toggleMask()" style="background:#1E1E1E; color:white;">🔒</button>
+            <span style="font-size: 10px; color: var(--text-muted); font-weight: 700;">KEY</span>
+            <input type="password" id="connectionKey" placeholder="Enter Key..." style="width: 140px;" oninput="saveSavedSettings()">
+            <button onclick="toggleMask()" style="background: rgba(255,255,255,0.08); color: white; padding: 6px 10px;">🔒</button>
             <button id="connectBtn" onclick="toggleConnection()">▶ Connect</button>
         </div>
     </div>
 
+    <!-- MAIN PANEL GRID -->
     <div class="main-grid">
-        <!-- LEFT: Config Panel -->
+        
+        <!-- LEFT PANEL: CONFIG -->
         <div class="panel">
-            <div class="panel-title">Speed & Range Config</div>
+            <div class="panel-header">
+                <div class="panel-title">Speed & Range Config</div>
+                <button onclick="resetDefaultConfig()" class="preset-btn">Reset Config</button>
+            </div>
             
             <div class="config-section">
-                <div style="color:#00E5FF; font-size:12px; font-weight:bold; margin-bottom:10px;">SPEED PRESETS (%)</div>
+                <div style="color:var(--cyan-glow); font-size:10px; font-weight:800; margin-bottom:8px;">SPEED PRESETS (%)</div>
                 <div class="config-row"><span>Slow [3]:</span><input type="number" id="spd_slow" value="20" onchange="updateConfig()"></div>
                 <div class="config-row"><span>Med [6]:</span><input type="number" id="spd_med" value="50" onchange="updateConfig()"></div>
                 <div class="config-row"><span>Fast [9]:</span><input type="number" id="spd_fast" value="80" onchange="updateConfig()"></div>
                 <div class="config-row"><span>Max [7]:</span><input type="number" id="spd_max" value="100" onchange="updateConfig()"></div>
             </div>
             
-            <hr style="border-color:#333; width:100%;">
+            <hr>
             
-            <div class="config-section" style="margin-top:10px;">
-                <div style="color:#00E5FF; font-size:12px; font-weight:bold; margin-bottom:10px;">ZONE RANGES (Min - Max)</div>
+            <div class="config-section" style="margin-top:8px;">
+                <div style="color:var(--cyan-glow); font-size:10px; font-weight:800; margin-bottom:8px;">ZONE RANGES (Min - Max)</div>
                 <div class="config-row"><span>Full [4]:</span><div><input type="number" id="z_full_min" value="20" onchange="updateConfig()"> - <input type="number" id="z_full_max" value="80" onchange="updateConfig()"></div></div>
                 <div class="config-row"><span>Bottom [2]:</span><div><input type="number" id="z_bot_min" value="20" onchange="updateConfig()"> - <input type="number" id="z_bot_max" value="40" onchange="updateConfig()"></div></div>
                 <div class="config-row"><span>Middle [5]:</span><div><input type="number" id="z_mid_min" value="30" onchange="updateConfig()"> - <input type="number" id="z_mid_max" value="50" onchange="updateConfig()"></div></div>
@@ -139,20 +333,20 @@
             </div>
         </div>
 
-        <!-- CENTER: Manual Controls -->
+        <!-- CENTER PANEL: MANUAL CONTROLS -->
         <div class="panel">
-            <div class="panel-title">Manual Controls</div>
+            <div class="panel-title" style="margin-bottom:12px;">Manual Controls</div>
             
             <div class="slider-group">
-                <div style="font-size:12px; font-weight:bold;">SPEED</div>
+                <div style="font-size:10px; font-weight:800; color:var(--text-muted);">SPEED</div>
                 <div class="val-label" id="speedValLabel">0%</div>
                 <input type="range" id="speedSlider" min="0" max="100" value="0" oninput="onSpeedChange(this.value)">
             </div>
 
-            <hr style="border-color:#333; width:100%;">
+            <hr>
 
-            <div class="slider-group" style="margin-top:10px;">
-                <div style="font-size:12px; font-weight:bold;">STROKE ZONE PRESETS</div>
+            <div class="slider-group" style="margin-top:6px;">
+                <div style="font-size:10px; font-weight:800; color:var(--text-muted);">STROKE ZONE PRESETS</div>
                 <div style="display:flex; justify-content:center; gap:5px; margin: 8px 0;">
                     <button class="preset-btn" onclick="setCustomZone('full', 'FULL')">[4] FULL</button>
                     <button class="preset-btn" onclick="setCustomZone('bottom', 'BOTTOM')">[2] BOT</button>
@@ -161,44 +355,43 @@
                 </div>
 
                 <div class="val-label" id="rangeValLabel">20% - 80%</div>
-                <div style="font-size:11px; color:#aaa;">MIN ZONE (%)</div>
+                <div style="font-size:9px; color:var(--text-muted); margin-top: 4px;">MIN ZONE (%)</div>
                 <input type="range" id="rangeMin" min="0" max="100" value="20" oninput="onMinRangeChange(this.value)">
                 
-                <div style="font-size:11px; color:#aaa; margin-top:5px;">MAX ZONE (%)</div>
+                <div style="font-size:9px; color:var(--text-muted); margin-top: 6px;">MAX ZONE (%)</div>
                 <input type="range" id="rangeMax" min="0" max="100" value="80" oninput="onMaxRangeChange(this.value)">
             </div>
 
-            <hr style="border-color:#333; width:100%; margin: 10px 0;">
+            <hr>
 
-            <div style="text-align:center; color:#FFB300; font-size:12px; font-weight:bold; margin-bottom:5px;">POSITION MODE</div>
+            <div style="text-align:center; color:var(--amber-glow); font-size:10px; font-weight:800; margin-bottom:6px;">POSITION MODE</div>
             <div class="pos-grid">
                 <div>
-                    <div style="font-size:10px; color:#FFB300;">CENTER</div>
-                    <div id="posCenterLabel" style="font-size:12px; font-weight:bold; color:#FFB300;">50%</div>
+                    <div style="font-size:9px; color:var(--amber-glow); font-weight:700;">CENTER</div>
+                    <div id="posCenterLabel" style="font-size:12px; font-weight:800; color:var(--amber-glow);">50%</div>
                     <input type="range" id="posCenter" min="0" max="100" value="50" oninput="onPosCenterChange(this.value)">
                 </div>
                 <div>
-                    <div style="font-size:10px; color:#00E5FF;">SPEED</div>
-                    <div id="posSpeedLabel" style="font-size:12px; font-weight:bold; color:#00E5FF;">0%</div>
+                    <div style="font-size:9px; color:var(--cyan-glow); font-weight:700;">SPEED</div>
+                    <div id="posSpeedLabel" style="font-size:12px; font-weight:800; color:var(--cyan-glow);">0%</div>
                     <input type="range" id="posSpeed" min="0" max="100" value="0" oninput="onSpeedChange(this.value)">
                 </div>
             </div>
-            <div style="text-align:center; font-size:12px; margin-bottom:8px;">
-                WINDOW ± <input type="number" id="posWindow" value="2" onchange="updatePosWindow()"> %
+            <div style="text-align:center; font-size:10px; margin-bottom:8px; color:var(--text-muted);">
+                WINDOW ± <input type="number" id="posWindow" value="2" onchange="updatePosWindow()" style="width:52px;"> %
             </div>
             <button id="posModeBtn" onclick="togglePosMode()" style="width:100%;">▶ START POS MODE</button>
         </div>
 
-        <!-- RIGHT: Interactive Keymap -->
+        <!-- RIGHT PANEL: INTERACTIVE KEYMAP -->
         <div class="panel">
-            <div class="panel-title">Layout Reference</div>
+            <div class="panel-title" style="margin-bottom:12px;">Layout Reference</div>
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <div style="color:#00E5FF; font-weight:bold; font-size:12px;">CONTROL MODE (Click to Rebind)</div>
-                <button onclick="resetDefaultKeymaps()" class="preset-btn" style="font-size:9px;">Reset Binds</button>
+                <div style="color:var(--cyan-glow); font-weight:800; font-size:10px;">CONTROL MODE (Click to Rebind)</div>
+                <button onclick="resetDefaultKeymaps()" class="preset-btn">Reset Binds</button>
             </div>
             
-            <!-- INTERACTIVE 3x4 NUMPAD GRID -->
             <div class="numpad-grid">
                 <div class="numpad-btn" id="btn_max" onclick="startListening('max')">
                     <span class="key-code" id="code_max">[Numpad7]</span><span class="key-desc">MAX</span>
@@ -241,9 +434,9 @@
                 </div>
             </div>
             
-            <hr style="border-color:#333; width:100%; margin: 15px 0;">
+            <hr>
             
-            <div style="color:#00E676; font-weight:bold; font-size:12px; margin-bottom:5px;">PATTERN MODE (Num Lock / *)</div>
+            <div style="color:var(--green-glow); font-weight:800; font-size:10px; margin-bottom:6px;">PATTERN MODE (Num Lock / *)</div>
             <div class="keymap">
   [1] Smooth Fast Wave     [2] Ramp Up 
   [3] Fast Burst & Pause   [4] Fast Thrust
@@ -256,12 +449,13 @@
         </div>
     </div>
 
-    <!-- BOTTOM: Log -->
+    <!-- BOTTOM LOG -->
     <div class="log-container">
-        <div style="padding: 4px 10px; font-size: 10px; font-weight: bold; color: #888; border-bottom: 1px solid #333;">LIVE SYSTEM LOG</div>
+        <div style="padding: 5px 10px; font-size: 9px; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--panel-border); letter-spacing: 0.5px;">SYSTEM LOG</div>
         <div class="log-box" id="logBox">System initialized. Click ▶ Connect to start.</div>
     </div>
 
+    <!-- JAVASCRIPT -->
     <script>
         const BASE_URL = "https://www.handyfeeling.com/api/handy/v2";
         const UPLOAD_URL = "https://www.handyfeeling.com/api/hosting/v2/upload";
@@ -271,10 +465,11 @@
         let lastStrokeSend = 0;
         let listeningAction = null;
         
-        let config = {
+        const DEFAULT_CONFIG = {
             speeds: { slow: 20, med: 50, fast: 80, max: 100 },
             zones: { full: [20, 80], bottom: [20, 40], middle: [30, 50], upper: [60, 80] }
         };
+        let config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
         const DEFAULT_KEYMAP = {
             start: "Numpad1", stop: "Numpad0",
@@ -298,28 +493,27 @@
             7: "Cooldown Wave", 8: "Gentle Slow Wave", 9: "Max Speed Sprint"
         };
 
-        // AUTO-LOAD SAVED SETTINGS FROM BROWSER STORAGE
+        function syncConfigToDOM() {
+            document.getElementById('spd_slow').value = config.speeds.slow;
+            document.getElementById('spd_med').value = config.speeds.med;
+            document.getElementById('spd_fast').value = config.speeds.fast;
+            document.getElementById('spd_max').value = config.speeds.max;
+            document.getElementById('z_full_min').value = config.zones.full[0];
+            document.getElementById('z_full_max').value = config.zones.full[1];
+            document.getElementById('z_bot_min').value = config.zones.bottom[0];
+            document.getElementById('z_bot_max').value = config.zones.bottom[1];
+            document.getElementById('z_mid_min').value = config.zones.middle[0];
+            document.getElementById('z_mid_max').value = config.zones.middle[1];
+            document.getElementById('z_up_min').value = config.zones.upper[0];
+            document.getElementById('z_up_max').value = config.zones.upper[1];
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const savedKey = localStorage.getItem("handy_key");
             if (savedKey) document.getElementById('connectionKey').value = savedKey;
             
             const savedConfig = localStorage.getItem("handy_config");
-            if (savedConfig) {
-                config = JSON.parse(savedConfig);
-                document.getElementById('spd_slow').value = config.speeds.slow;
-                document.getElementById('spd_med').value = config.speeds.med;
-                document.getElementById('spd_fast').value = config.speeds.fast;
-                document.getElementById('spd_max').value = config.speeds.max;
-                
-                document.getElementById('z_full_min').value = config.zones.full[0];
-                document.getElementById('z_full_max').value = config.zones.full[1];
-                document.getElementById('z_bot_min').value = config.zones.bottom[0];
-                document.getElementById('z_bot_max').value = config.zones.bottom[1];
-                document.getElementById('z_mid_min').value = config.zones.middle[0];
-                document.getElementById('z_mid_max').value = config.zones.middle[1];
-                document.getElementById('z_up_min').value = config.zones.upper[0];
-                document.getElementById('z_up_max').value = config.zones.upper[1];
-            }
+            if (savedConfig) { config = JSON.parse(savedConfig); syncConfigToDOM(); }
 
             const savedMap = localStorage.getItem("handy_keymap");
             if (savedMap) keymap = JSON.parse(savedMap);
@@ -334,7 +528,7 @@
 
         function formatKeyName(code) {
             if (!code) return "";
-            return code.replace("NumpadSubtract", "NumpadSub").replace("NumpadAdd", "NumpadAdd");
+            return code.replace("NumpadSubtract", "NumpadSub");
         }
 
         function updateMapLabels() {
@@ -344,7 +538,6 @@
             }
         }
 
-        /* REBINDING LOGIC */
         function startListening(action) {
             listeningAction = action;
             document.querySelectorAll('.numpad-btn').forEach(b => b.classList.remove('listening'));
@@ -363,6 +556,13 @@
             updateMapLabels();
             logMessage("🔄 Keybindings reset to default Numpad layout.");
         }
+        
+        function resetDefaultConfig() {
+            config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+            syncConfigToDOM();
+            saveSavedSettings();
+            logMessage("🔄 Speed and Zone configurations reset to default.");
+        }
 
         function logMessage(msg) {
             const logBox = document.getElementById('logBox');
@@ -371,10 +571,12 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        function toggleMask() {
-            const input = document.getElementById('connectionKey');
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
+		function toggleMask() {
+			const input = document.getElementById('connectionKey');
+			const isHidden = input.type === 'password';
+			input.type = isHidden ? 'text' : 'password';
+			event.target.innerText = isHidden ? '👁️' : '🔒';
+		}
 
         async function apiReq(path, method="GET", body = null) {
             const key = document.getElementById('connectionKey').value.trim();
@@ -501,7 +703,6 @@
             logMessage("■ STOPPED");
         }
 
-        // POSITION MODE LOGIC
         function onPosCenterChange(val) {
             val = parseInt(val);
             document.getElementById('posCenterLabel').innerText = val + "%";
@@ -538,7 +739,6 @@
             }
         }
 
-        // PATTERN MODE LOGIC
         function toggleMode() {
             state.pattern_mode = !state.pattern_mode;
             const lbl = document.getElementById('modeLabel');
@@ -556,12 +756,11 @@
             let actions = [];
             let t = 0;
             const total_duration_ms = 40000;
-            let stroke = 400;
 
             if (id === 1) {
                 while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += 400; actions.push({at: t, pos: max_pos}); t += 400; }
             } else if (id === 2) {
-                stroke = 1200; while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += stroke; actions.push({at: t, pos: max_pos}); t += stroke; stroke = Math.max(250, stroke * 0.92); }
+                let stroke = 1200; while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += stroke; actions.push({at: t, pos: max_pos}); t += stroke; stroke = Math.max(250, stroke * 0.92); }
             } else if (id === 3) {
                 while(t < total_duration_ms) { for(let i=0;i<3;i++){ actions.push({at: t, pos: min_pos}); t += 250; actions.push({at: t, pos: max_pos}); t += 250;} actions.push({at: t, pos: min_pos}); t += 1000; }
             } else if (id === 4) {
@@ -571,7 +770,7 @@
             } else if (id === 6) {
                 while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += 600; actions.push({at: t, pos: max_pos}); t += 600; }
             } else if (id === 7) {
-                stroke = 250; while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += stroke; actions.push({at: t, pos: max_pos}); t += stroke; stroke = Math.min(1500, stroke * 1.08); }
+                let stroke = 250; while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += stroke; actions.push({at: t, pos: max_pos}); t += stroke; stroke = Math.min(1500, stroke * 1.08); }
             } else if (id === 8) {
                 while(t < total_duration_ms) { actions.push({at: t, pos: min_pos}); t += 1000; actions.push({at: t, pos: max_pos}); t += 1000; }
             } else if (id === 9) {
@@ -611,8 +810,8 @@
             } catch (e) { logMessage("❌ Failed to upload/play pattern script."); }
         }
 
-        // KEYBOARD HOOKS
         window.addEventListener('keydown', (e) => {
+            if (e.target.tagName === "INPUT" && e.target.type !== "range") return;
             if (listeningAction) {
                 e.preventDefault();
                 keymap[listeningAction] = e.code;
